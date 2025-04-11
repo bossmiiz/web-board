@@ -70,85 +70,89 @@ export default function PostDetails({
           onClose={() => setIsSidebarOpen(false)}
         />
         <main className="flex-1 bg-white min-h-[calc(100vh-64px)]">
-          <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
             {/* Back Button */}
             <Link
               href="/"
-              className="inline-flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#E8F3F0] hover:bg-[#E8F3F0]/80 transition-colors mb-8"
+              className="inline-flex items-center justify-center w-[40px] h-[40px] sm:w-[44px] sm:h-[44px] rounded-full bg-[#E8F3F0] hover:bg-[#E8F3F0]/80 transition-colors mb-6 sm:mb-8"
             >
-              <ArrowLeft className="w-6 h-6 text-gray-700" />
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
             </Link>
 
             {/* Author Info */}
-            <div className="flex items-start mb-6">
-              <div className="relative w-12 h-12">
-                <Image
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  fill
-                  className="rounded-full object-cover"
-                />
-                {post.author.isOnline && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#49A569] rounded-full border-2 border-white"></div>
-                )}
-              </div>
-              <div className="ml-3">
-                <div className="flex items-center">
-                  <h3 className="text-[#191919] text-base">
-                    {post.author.name}
-                  </h3>
-                  <span className="ml-2 text-sm text-[#939494]">
-                    {post.timestamp}
-                  </span>
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-start">
+                <div className="flex flex-col items-center">
+                  <div className="relative w-10 h-10 sm:w-12 sm:h-12">
+                    <Image
+                      src={post.author.avatar}
+                      alt={post.author.name}
+                      fill
+                      className="rounded-full object-cover"
+                    />
+                    {post.author.isOnline && (
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#49A569] rounded-full border-2 border-white"></div>
+                    )}
+                  </div>
+                  <div className="text-xs sm:text-sm text-[#939494] mt-2">
+                    {post.category}
+                  </div>
                 </div>
-                <div className="text-sm text-[#939494] mt-1">
-                  {post.category}
+                <div className="ml-3">
+                  <div className="flex items-center">
+                    <h3 className="text-[#191919] text-sm sm:text-base">
+                      {post.author.name}
+                    </h3>
+                    <span className="ml-2 text-xs sm:text-sm text-[#939494]">
+                      {post.timestamp}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Post Content */}
-            <article className="mb-8">
-              <h1 className="text-[28px] font-semibold text-[#191919] mb-4">
+            <article className="mb-6 sm:mb-8">
+              <h1 className="text-xl sm:text-[28px] font-semibold text-[#191919] mb-3 sm:mb-4">
                 {post.title}
               </h1>
-              <p className="text-[#191919] leading-relaxed">{post.content}</p>
+              <p className="text-sm sm:text-base text-[#191919] leading-relaxed">{post.content}</p>
             </article>
 
             {/* Comments Section */}
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <div className="flex items-center mb-4">
-                <ChatBubbleLeftIcon className="h-5 w-5 text-[#939494]" />
-                <span className="ml-2 text-[#939494]">
+                <ChatBubbleLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 text-[#939494]" />
+                <span className="ml-2 text-sm text-[#939494]">
                   {post.comments.length} Comments
                 </span>
               </div>
 
-              <button className="mb-8 bg-white border border-custom_success text-custom_success px-4 py-2 rounded-lg hover:bg-[#2b5f44] transition-colors">
+              <button className="mb-6 sm:mb-8 text-sm sm:text-base bg-white border border-custom_success text-custom_success px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-[#2b5f44] hover:text-white transition-colors">
                 Add Comments
               </button>
 
               {/* Comments List */}
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {post.comments.map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-[#F3F3F3] rounded-full flex items-center justify-center">
-                        <span className="text-[#939494] text-sm">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#F3F3F3] rounded-full flex items-center justify-center">
+                        <span className="text-[#939494] text-xs sm:text-sm">
                           {comment.author.charAt(0)}
                         </span>
                       </div>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center mb-1">
-                        <h3 className="font-medium text-[#191919] text-sm">
+                        <h3 className="font-medium text-[#191919] text-xs sm:text-sm">
                           {comment.author}
                         </h3>
-                        <span className="ml-2 text-xs text-[#939494]">
+                        <span className="ml-2 text-[10px] sm:text-xs text-[#939494]">
                           {comment.timestamp}
                         </span>
                       </div>
-                      <p className="text-[#191919] text-sm leading-relaxed">
+                      <p className="text-xs sm:text-sm text-[#191919] leading-relaxed">
                         {comment.content}
                       </p>
                     </div>
