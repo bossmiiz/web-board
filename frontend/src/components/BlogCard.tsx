@@ -32,7 +32,7 @@ const BlogCard = ({
         <span className="text-gray-700">{author}</span>
       </div>
       <div className="mb-2">
-        <span className="text-sm text-gray-500">{category}</span>
+        <span className="inline-block px-4 py-1 rounded-full bg-[#F3F3F3] text-sm text-gray-500">{category}</span>
       </div>
       <h2 className="text-xl font-semibold mb-2">{title}</h2>
       <p className="text-gray-600 mb-4">{excerpt}</p>
