@@ -2,12 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { useState } from "react";
 import { use } from "react";
-import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleLeftIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import CommentModal from "@/components/CommentModal";
 
 interface Comment {
@@ -80,7 +79,7 @@ export default function PostDetails({
               href="/"
               className="inline-flex items-center justify-center w-[40px] h-[40px] sm:w-[44px] sm:h-[44px] rounded-full bg-[#E8F3F0] hover:bg-[#E8F3F0]/80 transition-colors mb-6 sm:mb-8"
             >
-              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+              <ArrowLeftIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
             </Link>
 
             {/* Author Info */}
