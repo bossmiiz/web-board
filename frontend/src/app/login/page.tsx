@@ -12,9 +12,26 @@ export default function LoginPage() {
       <div className="absolute inset-0 w-full h-full bg-custom_green-500" />
 
       {/* Content container */}
-      <div className="relative flex h-full w-full">
-        {/* Left section */}
-        <div className="w-[60%] flex flex-col justify-center items-center px-8">
+      <div className="relative flex flex-col md:flex-row h-full w-full">
+        {/* Logo section - top on mobile, left on desktop */}
+        <div className="relative md:absolute md:right-0 w-full md:w-[40%] h-[45%] md:h-full flex flex-col justify-center items-center rounded-b-[48px] md:rounded-b-none md:rounded-l-[48px] bg-custom_green-300">
+          <div className="text-center">
+            <Image
+              src="/images/logo-board.svg"
+              alt="Board Logo"
+              width={301}
+              height={231}
+              priority
+              className="w-[200px] h-auto md:w-[301px]"
+            />
+            <h2 className="text-custom_white text-[28px] mt-4 italic font-castoro font-normal">
+              a Board
+            </h2>
+          </div>
+        </div>
+
+        {/* Login form section - bottom on mobile, right on desktop */}
+        <div className="w-full md:w-[60%] flex flex-col justify-center items-center px-6 md:px-8 flex-1 md:flex-none">
           <div className="w-full max-w-md">
             <h1 className="text-custom_white text-[28px] font-inter font-semibold mb-8">
               Sign in
@@ -31,22 +48,6 @@ export default function LoginPage() {
                 Sign In
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Right section with rounded left corners */}
-        <div className="absolute right-0 w-[40%] h-full flex flex-col justify-center items-center rounded-l-[48px] bg-custom_green-300">
-          <div className="text-center">
-            <Image
-              src="/images/logo-board.svg"
-              alt="Board Logo"
-              width={301}
-              height={231}
-              priority
-            />
-            <h2 className="text-custom_white text-[28px] mt-4 italic font-castoro font-normal">
-              a Board
-            </h2>
           </div>
         </div>
       </div>
