@@ -1,0 +1,55 @@
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
+
+export default function LoginPage() {
+  const [username, setUsername] = useState("");
+
+  return (
+    <div className="relative h-screen w-full">
+      {/* Base background that fills entire space */}
+      <div className="absolute inset-0 w-full h-full bg-custom_green-500" />
+
+      {/* Content container */}
+      <div className="relative flex h-full w-full">
+        {/* Left section */}
+        <div className="w-[60%] flex flex-col justify-center items-center px-8">
+          <div className="w-full max-w-md">
+            <h1 className="text-custom_white text-[28px] font-inter font-semibold mb-8">
+              Sign in
+            </h1>
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full h-[44px] px-4 py-3 rounded-lg bg-white text-custom_text focus:outline-none border border-custom_grey-100"
+              />
+              <button className="w-full h-[40px] py-2 bg-custom_success text-white rounded-lg hover:bg-custom_green-300 transition-colors font-inter">
+                Sign In
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Right section with rounded left corners */}
+        <div className="absolute right-0 w-[40%] h-full flex flex-col justify-center items-center rounded-l-[48px] bg-custom_green-300">
+          <div className="text-center">
+            <Image
+              src="/images/logo-board.svg"
+              alt="Board Logo"
+              width={301}
+              height={231}
+              priority
+            />
+            <h2 className="text-custom_white text-[28px] mt-4 italic font-castoro font-normal">
+              a Board
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
