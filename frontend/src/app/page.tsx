@@ -20,6 +20,7 @@ const categories = [
 
 const dummyPosts = [
   {
+    id: "1",
     title: "The Beginning of the End of the World",
     excerpt:
       "The afterlife sitcom The Good Place comes to its culmination, the show's two protagonists, Eleanor and Chidi, contemplate their future...",
@@ -29,6 +30,7 @@ const dummyPosts = [
     authorImage: "/default-avatar.png",
   },
   {
+    id: "2",
     title: "The Mental Health Benefits of Exercise",
     excerpt:
       "You already know that exercise is good for your body. But did you know it can also boost your mood, improve your sleep, and help you deal with depression, anxiety, stress, and more?",
@@ -171,7 +173,12 @@ export default function Home() {
 
             <div className="space-y-4">
               {dummyPosts.map((post, index) => (
-                <BlogCard key={index} {...post} />
+                <BlogCard 
+                  key={index} 
+                  {...post} 
+                  isFirst={index === 0}
+                  isLast={index === dummyPosts.length - 1}
+                />
               ))}
             </div>
           </div>
