@@ -8,6 +8,7 @@ import Sidebar from "@/components/Sidebar";
 import { useState } from "react";
 import { use } from "react";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import CommentModal from "@/components/CommentModal";
 
 interface Comment {
   id: string;
@@ -37,6 +38,7 @@ export default function PostDetails({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showCommentInput, setShowCommentInput] = useState(false);
+  const [showMobileModal, setShowMobileModal] = useState(false);
   const [commentText, setCommentText] = useState("");
   const resolvedParams = use(params);
 
@@ -132,15 +134,22 @@ export default function PostDetails({
 
               {!showCommentInput && (
                 <button 
-                  onClick={() => setShowCommentInput(true)}
+                  onClick={() => {
+                    if (window.innerWidth < 768) {
+                      setShowMobileModal(true);
+                    } else {
+                      setShowCommentInput(true);
+                    }
+                  }}
                   className="mb-6 sm:mb-8 text-sm sm:text-base bg-white border border-custom_success text-custom_success px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-[#2b5f44] hover:text-white transition-colors"
                 >
                   Add Comments
                 </button>
               )}
 
+              {/* Desktop Comment Input */}
               {showCommentInput && (
-                <div className="mb-6">
+                <div className="mb-6 hidden md:block">
                   <textarea
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
@@ -170,6 +179,22 @@ export default function PostDetails({
                   </div>
                 </div>
               )}
+
+              {/* Mobile Comment Modal */}
+              <CommentModal
+                isOpen={showMobileModal}
+                onClose={() => {
+                  setShowMobileModal(false);
+                  setCommentText("");
+                }}
+                commentText={commentText}
+                onCommentChange={setCommentText}
+                onSubmit={() => {
+                  // Handle post comment logic here
+                  setShowMobileModal(false);
+                  setCommentText("");
+                }}
+              />
 
               {/* Comments List */}
               <div className="space-y-4 sm:space-y-6">
