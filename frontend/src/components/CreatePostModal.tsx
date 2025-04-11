@@ -39,8 +39,8 @@ export default function CreatePostModal({
       />
 
       {/* Modal content */}
-      <div className="relative w-[685px] h-[510px] bg-white rounded-[20px] overflow-hidden">
-        <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+      <div className="relative w-[343px] h-[580px] md:w-[685px] md:h-[510px] bg-white rounded-[20px] overflow-hidden">
+        <div className="px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-gray-100">
           <div className="flex justify-between items-center">
             <h2 className="text-[22px] font-medium text-[#191919]">
               Create Post
@@ -54,18 +54,18 @@ export default function CreatePostModal({
           </div>
         </div>
 
-        <div className="p-6">
-          <div className="mb-6 relative">
+        <div className="p-4 md:p-6">
+          <div className="mb-4 md:mb-6 relative">
             <button
               onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-              className="inline-flex w-[195px] items-center px-4 py-2 text-sm text-custom_success bg-white border border-custom_success rounded-lg transition-colors"
+              className="inline-flex w-[311px] md:w-[195px] items-center justify-center px-4 py-2 text-sm text-custom_success bg-white border border-custom_success rounded-lg transition-colors text-center"
             >
               {selectedCategory || "Choose a community"}
               <ChevronDownIcon className="h-4 w-4 ml-2 text-custom_success" />
             </button>
 
             {isCategoryDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-[320px] bg-white border border-custom_gray-100 rounded-lg shadow-lg z-20">
+              <div className="absolute left-0 mt-2 w-[311px] md:w-[320px] bg-white border border-custom_gray-100 rounded-lg shadow-lg z-20">
                 {categories.map((category) => (
                   <button
                     key={category.id}
@@ -111,14 +111,14 @@ export default function CreatePostModal({
             placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-3 mb-4 border border-gray-200 rounded-lg text-base placeholder:text-[#939494] focus:outline-none focus:ring-1 focus:ring-custom_success"
+            className="w-full p-3 mb-3 md:mb-4 border border-gray-200 rounded-lg text-base placeholder:text-[#939494] focus:outline-none focus:ring-1 focus:ring-custom_success"
           />
 
           <textarea
             placeholder="What's on your mind..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full p-3 border border-gray-200 rounded-lg text-base placeholder:text-[#939494] mb-6 min-h-[200px] focus:outline-none focus:ring-1 focus:ring-custom_success resize-none"
+            className="w-full p-3 border border-gray-200 rounded-lg text-base placeholder:text-[#939494] mb-4 md:mb-6 min-h-[200px] focus:outline-none focus:ring-1 focus:ring-custom_success resize-none"
           />
 
           <div className="flex justify-end gap-3">
