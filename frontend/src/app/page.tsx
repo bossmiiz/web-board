@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import BlogCard from "@/components/BlogCard";
+import CreatePostModal from "@/components/CreatePostModal";
 
 const categories = [
   { id: 1, name: "History" },
@@ -46,6 +47,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -165,7 +167,10 @@ export default function Home() {
                     </>
                   )}
                 </div>
-                <button className="bg-custom_success text-white px-4 py-2 rounded-md hover:bg-custom_green-300 transition-colors w-[105px] h-[40px]">
+                <button 
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="bg-custom_success text-white px-4 py-2 rounded-md hover:bg-custom_green-300 transition-colors w-[105px] h-[40px]"
+                >
                   Create +
                 </button>
               </div>
@@ -184,6 +189,12 @@ export default function Home() {
           </div>
         </main>
       </div>
+      <CreatePostModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+      />
     </div>
   );
 }
