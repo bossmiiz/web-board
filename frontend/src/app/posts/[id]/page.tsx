@@ -36,6 +36,8 @@ export default function PostDetails({
   params: Promise<{ id: string }>;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [commentText, setCommentText] = useState("");
   const resolvedParams = use(params);
 
   const post: Post = {
@@ -128,9 +130,46 @@ export default function PostDetails({
                 </span>
               </div>
 
-              <button className="mb-6 sm:mb-8 text-sm sm:text-base bg-white border border-custom_success text-custom_success px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-[#2b5f44] hover:text-white transition-colors">
-                Add Comments
-              </button>
+              {!showCommentInput && (
+                <button 
+                  onClick={() => setShowCommentInput(true)}
+                  className="mb-6 sm:mb-8 text-sm sm:text-base bg-white border border-custom_success text-custom_success px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-[#2b5f44] hover:text-white transition-colors"
+                >
+                  Add Comments
+                </button>
+              )}
+
+              {showCommentInput && (
+                <div className="mb-6">
+                  <textarea
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="What's on your mind..."
+                    className="w-full p-3 border border-gray-200 rounded-lg mb-3 min-h-[100px] focus:outline-none focus:ring-1 focus:ring-custom_success"
+                  />
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={() => {
+                        setShowCommentInput(false);
+                        setCommentText("");
+                      }}
+                      className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        // Handle post comment logic here
+                        setShowCommentInput(false);
+                        setCommentText("");
+                      }}
+                      className="px-4 py-2 text-sm bg-custom_success text-white rounded-lg hover:bg-[#2b5f44] transition-colors"
+                    >
+                      Post
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Comments List */}
               <div className="space-y-4 sm:space-y-6">
