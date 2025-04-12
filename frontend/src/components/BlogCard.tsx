@@ -6,6 +6,8 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { memo } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface BlogCardProps {
   id: string;
@@ -49,24 +51,45 @@ const ActionButtons = memo(
     id: string;
     onEdit?: (id: string) => void;
     onDelete?: (id: string) => void;
-  }) => (
-    <div className="flex items-center space-x-2">
-      <button
-        onClick={() => onEdit?.(id)}
-        className="p-2 text-gray-500 hover:text-custom_green-500 transition-colors"
-        aria-label="Edit post"
-      >
-        <PencilSquareIcon className="h-5 w-5" />
-      </button>
-      <button
-        onClick={() => onDelete?.(id)}
-        className="p-2 text-gray-500 hover:text-red-500 transition-colors"
-        aria-label="Delete post"
-      >
-        <TrashIcon className="h-5 w-5" />
-      </button>
-    </div>
-  )
+  }) => {
+    const { isAuthenticated } = useAuth();
+    const router = useRouter();
+
+    const handleEdit = () => {
+      if (!isAuthenticated) {
+        router.push("/login");
+        return;
+      }
+      onEdit?.(id);
+    };
+
+    const handleDelete = () => {
+      if (!isAuthenticated) {
+        router.push("/login");
+        return;
+      }
+      onDelete?.(id);
+    };
+
+    return (
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={handleEdit}
+          className="p-2 text-gray-500 hover:text-custom_green-500 transition-colors"
+          aria-label="Edit post"
+        >
+          <PencilSquareIcon className="h-5 w-5" />
+        </button>
+        <button
+          onClick={handleDelete}
+          className="p-2 text-gray-500 hover:text-red-500 transition-colors"
+          aria-label="Delete post"
+        >
+          <TrashIcon className="h-5 w-5" />
+        </button>
+      </div>
+    );
+  }
 );
 
 ActionButtons.displayName = "ActionButtons";
