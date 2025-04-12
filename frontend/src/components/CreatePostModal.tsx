@@ -121,14 +121,14 @@ export default function CreatePostModal({
             className="w-full p-3 border border-gray-200 rounded-lg text-base placeholder:text-[#939494] mb-4 md:mb-6 min-h-[200px] focus:outline-none focus:ring-1 focus:ring-custom_success resize-none"
           />
 
-          <div className="flex justify-end gap-3">
+          <div className="flex flex-col md:flex-row md:justify-end gap-3">
             <button
               onClick={() => {
                 setTitle("");
                 setContent("");
                 onClose();
               }}
-              className="px-4 py-2 text-sm text-custom_success border border-custom_success rounded-lg w-[105px] h-[40px]"
+              className="w-full md:w-[105px] h-[40px] px-4 py-2 text-sm text-custom_success border border-custom_success rounded-lg"
             >
               Cancel
             </button>
@@ -138,7 +138,7 @@ export default function CreatePostModal({
                 setContent("");
                 onClose();
               }}
-              className="px-4 py-2 text-sm bg-custom_success text-white rounded-lg hover:bg-[#2b5f44] transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-[105px] h-[40px"
+              className="w-full md:w-[105px] h-[40px] px-4 py-2 text-sm bg-custom_success text-white rounded-lg hover:bg-[#2b5f44] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!title.trim() || !content.trim() || !selectedCategory}
             >
               Post
