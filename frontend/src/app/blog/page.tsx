@@ -156,14 +156,47 @@ export default function BlogPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<{
+    id: string;
+    title: string;
+    content: string;
+    category: string;
+  } | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const handleEdit = useCallback((id: string) => {
-    console.log("Edit post:", id);
+    const postToEdit = dummyPosts.find((post) => post.id === id);
+    if (postToEdit) {
+      setEditingPost({
+        id,
+        title: postToEdit.title,
+        content: postToEdit.excerpt,
+        category: postToEdit.category,
+      });
+      setSelectedCategory(postToEdit.category);
+      setIsCreateModalOpen(true);
+    }
   }, []);
 
   const handleDelete = useCallback((id: string) => {
     console.log("Delete post:", id);
+  }, []);
+
+  const handlePostSubmit = useCallback(
+    (data: { title: string; content: string; category: string }) => {
+      if (editingPost) {
+        console.log("Editing post:", editingPost.id, data);
+      } else {
+        console.log("Creating new post:", data);
+      }
+      setEditingPost(null);
+    },
+    [editingPost]
+  );
+
+  const handleModalClose = useCallback(() => {
+    setIsCreateModalOpen(false);
+    setEditingPost(null);
   }, []);
 
   const toggleDropdown = useCallback(() => {
@@ -245,9 +278,13 @@ export default function BlogPage() {
       </div>
       <CreatePostModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={handleModalClose}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        mode={editingPost ? "edit" : "create"}
+        initialTitle={editingPost?.title || ""}
+        initialContent={editingPost?.content || ""}
+        onSubmit={handlePostSubmit}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import { XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const categories = [
   { id: 1, name: "History" },
@@ -16,6 +16,14 @@ interface CreatePostModalProps {
   onClose: () => void;
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
+  mode?: "create" | "edit";
+  initialTitle?: string;
+  initialContent?: string;
+  onSubmit: (data: {
+    title: string;
+    content: string;
+    category: string;
+  }) => void;
 }
 
 export default function CreatePostModal({
@@ -23,10 +31,32 @@ export default function CreatePostModal({
   onClose,
   selectedCategory,
   onCategoryChange,
+  mode = "create",
+  initialTitle = "",
+  initialContent = "",
+  onSubmit,
 }: CreatePostModalProps) {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState(initialTitle);
+  const [content, setContent] = useState(initialContent);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTitle(initialTitle);
+      setContent(initialContent);
+    }
+  }, [isOpen, initialTitle, initialContent]);
+
+  const handleSubmit = () => {
+    onSubmit({
+      title,
+      content,
+      category: selectedCategory,
+    });
+    setTitle("");
+    setContent("");
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -43,7 +73,7 @@ export default function CreatePostModal({
         <div className="px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-gray-100">
           <div className="flex justify-between items-center">
             <h2 className="text-[22px] font-medium text-[#191919]">
-              Create Post
+              {mode === "create" ? "Create Post" : "Edit Post"}
             </h2>
             <button
               onClick={onClose}
@@ -60,7 +90,9 @@ export default function CreatePostModal({
               onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
               className="inline-flex w-full md:w-[195px] items-center justify-between px-4 py-2 text-sm text-custom_success bg-white border border-custom_success rounded-lg transition-colors"
             >
-              <span className="truncate">{selectedCategory || "Choose a community"}</span>
+              <span className="truncate">
+                {selectedCategory || "Choose a community"}
+              </span>
               <ChevronDownIcon className="h-4 w-4 ml-2 flex-shrink-0 text-custom_success" />
             </button>
 
@@ -123,25 +155,17 @@ export default function CreatePostModal({
 
           <div className="flex flex-col md:flex-row md:justify-end gap-3">
             <button
-              onClick={() => {
-                setTitle("");
-                setContent("");
-                onClose();
-              }}
+              onClick={onClose}
               className="w-full md:w-[105px] h-[40px] px-4 py-2 text-sm text-custom_success border border-custom_success rounded-lg"
             >
               Cancel
             </button>
             <button
-              onClick={() => {
-                setTitle("");
-                setContent("");
-                onClose();
-              }}
+              onClick={handleSubmit}
               className="w-full md:w-[105px] h-[40px] px-4 py-2 text-sm bg-custom_success text-white rounded-lg hover:bg-[#2b5f44] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!title.trim() || !content.trim() || !selectedCategory}
             >
-              Post
+              {mode === "create" ? "Post" : "Confirm"}
             </button>
           </div>
         </div>
