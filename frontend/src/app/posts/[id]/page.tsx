@@ -8,6 +8,8 @@ import { useState } from "react";
 import { use } from "react";
 import { ChatBubbleLeftIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import CommentModal from "@/components/CommentModal";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface Comment {
   id: string;
@@ -40,6 +42,8 @@ export default function PostDetails({
   const [showMobileModal, setShowMobileModal] = useState(false);
   const [commentText, setCommentText] = useState("");
   const resolvedParams = use(params);
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   const post: Post = {
     id: resolvedParams.id,
@@ -62,6 +66,19 @@ export default function PostDetails({
         timestamp: "12h ago",
       },
     ],
+  };
+
+  const handleCommentClick = () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    if (window.innerWidth < 768) {
+      setShowMobileModal(true);
+    } else {
+      setShowCommentInput(true);
+    }
   };
 
   return (
@@ -133,13 +150,7 @@ export default function PostDetails({
 
               {!showCommentInput && (
                 <button 
-                  onClick={() => {
-                    if (window.innerWidth < 768) {
-                      setShowMobileModal(true);
-                    } else {
-                      setShowCommentInput(true);
-                    }
-                  }}
+                  onClick={handleCommentClick}
                   className="mb-6 sm:mb-8 text-sm sm:text-base bg-white border border-custom_success text-custom_success px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-[#2b5f44] hover:text-white transition-colors"
                 >
                   Add Comments
@@ -147,7 +158,7 @@ export default function PostDetails({
               )}
 
               {/* Desktop Comment Input */}
-              {showCommentInput && (
+              {showCommentInput && isAuthenticated && (
                 <div className="mb-6 hidden md:block">
                   <textarea
                     value={commentText}
@@ -180,20 +191,22 @@ export default function PostDetails({
               )}
 
               {/* Mobile Comment Modal */}
-              <CommentModal
-                isOpen={showMobileModal}
-                onClose={() => {
-                  setShowMobileModal(false);
-                  setCommentText("");
-                }}
-                commentText={commentText}
-                onCommentChange={setCommentText}
-                onSubmit={() => {
-                  // Handle post comment logic here
-                  setShowMobileModal(false);
-                  setCommentText("");
-                }}
-              />
+              {isAuthenticated && (
+                <CommentModal
+                  isOpen={showMobileModal}
+                  onClose={() => {
+                    setShowMobileModal(false);
+                    setCommentText("");
+                  }}
+                  commentText={commentText}
+                  onCommentChange={setCommentText}
+                  onSubmit={() => {
+                    // Handle post comment logic here
+                    setShowMobileModal(false);
+                    setCommentText("");
+                  }}
+                />
+              )}
 
               {/* Comments List */}
               <div className="space-y-4 sm:space-y-6">

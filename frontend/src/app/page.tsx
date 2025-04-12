@@ -122,8 +122,11 @@ export default function Home() {
                   {isDropdownOpen && (
                     <>
                       {/* Overlay for mobile */}
-                      <div className="fixed inset-0 backdrop-blur-xs z-10 lg:hidden" onClick={() => setIsDropdownOpen(false)} />
-                      
+                      <div
+                        className="fixed inset-0 backdrop-blur-xs z-10 lg:hidden"
+                        onClick={() => setIsDropdownOpen(false)}
+                      />
+
                       <div className="absolute right-0 mt-2 w-[202px] lg:w-[320px] bg-white rounded-lg shadow-lg z-20">
                         <div>
                           {categories.map((category) => (
@@ -135,15 +138,17 @@ export default function Home() {
                               }}
                               className="w-full text-left"
                             >
-                              <div className={`flex items-center justify-between px-4 py-2 hover:bg-custom_green-100 transition-colors ${
-                                selectedCategory === category.name
-                                  ? "bg-custom_green-100 text-custom_green-500"
-                                  : ""
-                              } ${
-                                category.id === 1 ? "rounded-t-lg" : ""
-                              } ${
-                                category.id === categories.length ? "rounded-b-lg" : ""
-                              }`}>
+                              <div
+                                className={`flex items-center justify-between px-4 py-2 hover:bg-custom_green-100 transition-colors ${
+                                  selectedCategory === category.name
+                                    ? "bg-custom_green-100 text-custom_green-500"
+                                    : ""
+                                } ${category.id === 1 ? "rounded-t-lg" : ""} ${
+                                  category.id === categories.length
+                                    ? "rounded-b-lg"
+                                    : ""
+                                }`}
+                              >
                                 <span>{category.name}</span>
                                 {selectedCategory === category.name && (
                                   <svg
@@ -167,7 +172,7 @@ export default function Home() {
                     </>
                   )}
                 </div>
-                <button 
+                <button
                   onClick={() => setIsCreateModalOpen(true)}
                   className="bg-custom_success text-white px-4 py-2 rounded-md hover:bg-custom_green-300 transition-colors w-[105px] h-[40px]"
                 >
@@ -176,11 +181,11 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div>
               {dummyPosts.map((post, index) => (
-                <BlogCard 
-                  key={index} 
-                  {...post} 
+                <BlogCard
+                  key={index}
+                  {...post}
                   isFirst={index === 0}
                   isLast={index === dummyPosts.length - 1}
                 />

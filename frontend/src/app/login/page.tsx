@@ -2,9 +2,21 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
+  const router = useRouter();
+  const { login } = useAuth();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username.trim()) {
+      login(username);
+      router.push("/");
+    }
+  };
 
   return (
     <div className="relative h-screen w-full">
@@ -36,18 +48,22 @@ export default function LoginPage() {
             <h1 className="text-custom_white text-[28px] font-inter font-semibold mb-8">
               Sign in
             </h1>
-            <div className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4">
               <input
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full h-[44px] px-4 py-3 rounded-lg bg-white text-custom_text focus:outline-none border border-custom_grey-100"
+                required
               />
-              <button className="w-full h-[40px] py-2 bg-custom_success text-white rounded-lg hover:bg-custom_green-300 transition-colors font-inter">
+              <button 
+                type="submit"
+                className="w-full h-[40px] py-2 bg-custom_success text-white rounded-lg hover:bg-custom_green-300 transition-colors font-inter"
+              >
                 Sign In
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>

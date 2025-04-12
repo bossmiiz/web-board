@@ -227,7 +227,7 @@ export default function BlogPage() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div>
               {dummyPosts.map((post, index) => (
                 <BlogCard
                   key={post.id}
