@@ -5,9 +5,10 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 interface BlogCardProps {
   id: string;
@@ -54,6 +55,7 @@ const ActionButtons = memo(
   }) => {
     const { isAuthenticated } = useAuth();
     const router = useRouter();
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const handleEdit = () => {
       if (!isAuthenticated) {
@@ -68,26 +70,38 @@ const ActionButtons = memo(
         router.push("/login");
         return;
       }
+      setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
       onDelete?.(id);
+      setShowDeleteModal(false);
     };
 
     return (
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={handleEdit}
-          className="p-2 text-gray-500 hover:text-custom_green-500 transition-colors"
-          aria-label="Edit post"
-        >
-          <PencilSquareIcon className="h-5 w-5" />
-        </button>
-        <button
-          onClick={handleDelete}
-          className="p-2 text-gray-500 hover:text-red-500 transition-colors"
-          aria-label="Delete post"
-        >
-          <TrashIcon className="h-5 w-5" />
-        </button>
-      </div>
+      <>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleEdit}
+            className="p-2 text-gray-500 hover:text-custom_green-500 transition-colors"
+            aria-label="Edit post"
+          >
+            <PencilSquareIcon className="h-5 w-5" />
+          </button>
+          <button
+            onClick={handleDelete}
+            className="p-2 text-gray-500 hover:text-red-500 transition-colors"
+            aria-label="Delete post"
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        </div>
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleConfirmDelete}
+        />
+      </>
     );
   }
 );
