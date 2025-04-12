@@ -199,6 +199,10 @@ export default function Home() {
         onClose={() => setIsCreateModalOpen(false)}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        onSubmit={(data) => {
+          console.log('Form submitted:', data);
+          setIsCreateModalOpen(false);
+        }}
       />
     </div>
   );
