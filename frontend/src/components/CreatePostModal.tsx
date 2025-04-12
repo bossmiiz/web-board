@@ -58,14 +58,14 @@ export default function CreatePostModal({
           <div className="mb-4 md:mb-6 relative">
             <button
               onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-              className="inline-flex w-[311px] md:w-[195px] items-center justify-center px-4 py-2 text-sm text-custom_success bg-white border border-custom_success rounded-lg transition-colors text-center"
+              className="inline-flex w-full md:w-[195px] items-center justify-between px-4 py-2 text-sm text-custom_success bg-white border border-custom_success rounded-lg transition-colors"
             >
-              {selectedCategory || "Choose a community"}
-              <ChevronDownIcon className="h-4 w-4 ml-2 text-custom_success" />
+              <span className="truncate">{selectedCategory || "Choose a community"}</span>
+              <ChevronDownIcon className="h-4 w-4 ml-2 flex-shrink-0 text-custom_success" />
             </button>
 
             {isCategoryDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-[311px] md:w-[320px] bg-white border border-custom_gray-100 rounded-lg shadow-lg z-20">
+              <div className="absolute left-0 mt-2 w-full md:w-[320px] bg-white border border-custom_gray-100 rounded-lg shadow-lg z-20">
                 {categories.map((category) => (
                   <button
                     key={category.id}
