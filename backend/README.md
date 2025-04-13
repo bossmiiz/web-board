@@ -96,3 +96,62 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+# Backend API
+
+This is the backend API for the web-board application.
+
+## Authentication
+
+The API uses JWT (JSON Web Token) for authentication.
+
+### Login
+
+To authenticate, send a POST request to `/auth/login` with a JSON body containing your username:
+
+```json
+{
+  "username": "your_username"
+}
+```
+
+The response will include a JWT token:
+
+```json
+{
+  "message": "Login successful",
+  "user": {
+    "id": 1,
+    "username": "your_username"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### Using the JWT Token
+
+For protected routes, include the JWT token in the Authorization header:
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+Example using curl:
+
+```bash
+curl -X GET http://localhost:3000/users \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+## Protected Routes
+
+The following routes are protected and require a valid JWT token:
+
+- `GET /users` - Get all users
+- `POST /users` - Create a new user
+
+## Environment Variables
+
+The following environment variables are required:
+
+- `JWT_SECRET` - Secret key for JWT token generation
