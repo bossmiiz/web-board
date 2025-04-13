@@ -12,7 +12,8 @@ import {
 // Define the user interface
 interface RequestWithUser {
   user: {
-    id: string;
+    sub: string;
+    username: string;
   };
 }
 
@@ -38,6 +39,6 @@ export class PostsController {
     @Body() createPostDto: CreatePostDto,
     @Request() req: RequestWithUser,
   ) {
-    return await this.postsService.create(createPostDto, req.user.id);
+    return await this.postsService.create(createPostDto, req.user.sub);
   }
 }
