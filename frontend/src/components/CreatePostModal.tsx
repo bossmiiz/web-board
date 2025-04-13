@@ -1,15 +1,6 @@
 import { XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
-
-const categories = [
-  { id: 1, name: "History" },
-  { id: 2, name: "Food" },
-  { id: 3, name: "Pets" },
-  { id: 4, name: "Health" },
-  { id: 5, name: "Fashion" },
-  { id: 6, name: "Exercise" },
-  { id: 7, name: "Others" },
-];
+import { getCategories, Category } from "../services/categories.service";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -39,13 +30,31 @@ export default function CreatePostModal({
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       setTitle(initialTitle);
       setContent(initialContent);
+      fetchCategories();
     }
   }, [isOpen, initialTitle, initialContent]);
+
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getCategories();
+      setCategories(data);
+    } catch (err) {
+      setError("Failed to load categories. Please try again.");
+      console.error("Error loading categories:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = () => {
     onSubmit({
@@ -98,42 +107,56 @@ export default function CreatePostModal({
 
             {isCategoryDropdownOpen && (
               <div className="absolute left-0 mt-2 w-full md:w-[320px] bg-white border border-custom_gray-100 rounded-lg shadow-lg z-20">
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => {
-                      onCategoryChange(category.name);
-                      setIsCategoryDropdownOpen(false);
-                    }}
-                    className="w-full text-left"
-                  >
-                    <div
-                      className={`flex items-center justify-between px-4 py-2 hover:bg-custom_green-100 transition-colors ${
-                        selectedCategory === category.name
-                          ? "bg-custom_green-100 text-custom_green-500"
-                          : ""
-                      } ${category.id === 1 ? "rounded-t-lg" : ""} ${
-                        category.id === categories.length ? "rounded-b-lg" : ""
-                      }`}
+                {isLoading ? (
+                  <div className="px-4 py-2 text-sm text-gray-500">
+                    Loading categories...
+                  </div>
+                ) : error ? (
+                  <div className="px-4 py-2 text-sm text-red-500">{error}</div>
+                ) : (
+                  categories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => {
+                        onCategoryChange(category.name);
+                        setIsCategoryDropdownOpen(false);
+                      }}
+                      className="w-full text-left"
                     >
-                      <span>{category.name}</span>
-                      {selectedCategory === category.name && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-custom_green-500"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                  </button>
-                ))}
+                      <div
+                        className={`flex items-center justify-between px-4 py-2 hover:bg-custom_green-100 transition-colors ${
+                          selectedCategory === category.name
+                            ? "bg-custom_green-100 text-custom_green-500"
+                            : ""
+                        } ${
+                          category.id === categories[0]?.id
+                            ? "rounded-t-lg"
+                            : ""
+                        } ${
+                          category.id === categories[categories.length - 1]?.id
+                            ? "rounded-b-lg"
+                            : ""
+                        }`}
+                      >
+                        <span>{category.name}</span>
+                        {selectedCategory === category.name && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-custom_green-500"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  ))
+                )}
               </div>
             )}
           </div>

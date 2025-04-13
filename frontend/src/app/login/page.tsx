@@ -4,17 +4,32 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { login } from "@/services/auth.service";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { login } = useAuth();
+  const { login: authLogin } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.trim()) {
-      login(username);
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      if (!username.trim()) {
+        throw new Error("Username is required");
+      }
+
+      const response = await login(username);
+      authLogin(response.token, response.user);
       router.push("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,11 +72,15 @@ export default function LoginPage() {
                 className="w-full h-[44px] px-4 py-3 rounded-lg bg-white text-custom_text focus:outline-none border border-custom_grey-100"
                 required
               />
+              {error && (
+                <div className="text-red-500 text-sm">{error}</div>
+              )}
               <button 
                 type="submit"
-                className="w-full h-[40px] py-2 bg-custom_success text-white rounded-lg hover:bg-custom_green-300 transition-colors font-inter"
+                disabled={isLoading}
+                className="w-full h-[40px] py-2 bg-custom_success text-white rounded-lg hover:bg-custom_green-300 transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In
+                {isLoading ? "Signing in..." : "Sign In"}
               </button>
             </form>
           </div>

@@ -7,7 +7,7 @@ interface NavbarProps {
 }
 
 const Navbar = ({ onMenuClick }: NavbarProps) => {
-  const { isAuthenticated, username, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
 
   return (
     <nav className="bg-custom_green-500 p-4 flex justify-between items-center">
@@ -20,8 +20,15 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
       <div className="flex items-center gap-4">
         {isAuthenticated ? (
           <div className="flex items-center gap-4">
-            <span className="text-white hidden lg:block">{username}</span>
-            <button 
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-custom_success flex items-center justify-center text-white font-semibold">
+                {user?.username.charAt(0).toUpperCase()}
+              </div>
+              <span className="text-white hidden lg:block">
+                {user?.username}
+              </span>
+            </div>
+            <button
               onClick={logout}
               className="hidden lg:block bg-custom_success text-white px-4 py-2 rounded-md hover:bg-custom_green-300 w-[105px] h-[40px] transition-colors font-inter"
             >
@@ -36,10 +43,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
             Sign In
           </Link>
         )}
-        <button 
-          className="lg:hidden text-white"
-          onClick={onMenuClick}
-        >
+        <button className="lg:hidden text-white" onClick={onMenuClick}>
           <Bars3Icon className="h-6 w-6" />
         </button>
       </div>

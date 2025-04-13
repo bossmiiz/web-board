@@ -8,16 +8,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import BlogCard from "@/components/BlogCard";
 import CreatePostModal from "@/components/CreatePostModal";
-
-const categories = [
-  { id: 1, name: "History" },
-  { id: 2, name: "Food" },
-  { id: 3, name: "Pets" },
-  { id: 4, name: "Health" },
-  { id: 5, name: "Fashion" },
-  { id: 6, name: "Exercise" },
-  { id: 7, name: "Others" },
-];
+import { getCategories, Category } from "@/services/categories.service";
 
 const dummyPosts = [
   {
@@ -48,7 +39,28 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setIsLoadingCategories(true);
+        const data = await getCategories();
+        setCategories(data);
+        setCategoriesError(null);
+      } catch (error) {
+        setCategoriesError("Failed to load categories");
+        console.error("Error loading categories:", error);
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -121,7 +133,6 @@ export default function Home() {
 
                   {isDropdownOpen && (
                     <>
-                      {/* Overlay for mobile */}
                       <div
                         className="fixed inset-0 backdrop-blur-xs z-10 lg:hidden"
                         onClick={() => setIsDropdownOpen(false)}
@@ -129,44 +140,63 @@ export default function Home() {
 
                       <div className="absolute right-0 mt-2 w-[202px] lg:w-[320px] bg-white rounded-lg shadow-lg z-20">
                         <div>
-                          {categories.map((category) => (
-                            <button
-                              key={category.id}
-                              onClick={() => {
-                                setSelectedCategory(category.name);
-                                setIsDropdownOpen(false);
-                              }}
-                              className="w-full text-left"
-                            >
-                              <div
-                                className={`flex items-center justify-between px-4 py-2 hover:bg-custom_green-100 transition-colors ${
-                                  selectedCategory === category.name
-                                    ? "bg-custom_green-100 text-custom_green-500"
-                                    : ""
-                                } ${category.id === 1 ? "rounded-t-lg" : ""} ${
-                                  category.id === categories.length
-                                    ? "rounded-b-lg"
-                                    : ""
-                                }`}
+                          {isLoadingCategories ? (
+                            <div className="px-4 py-2 text-gray-500">
+                              Loading...
+                            </div>
+                          ) : categoriesError ? (
+                            <div className="px-4 py-2 text-red-500">
+                              {categoriesError}
+                            </div>
+                          ) : categories.length === 0 ? (
+                            <div className="px-4 py-2 text-gray-500">
+                              No categories available
+                            </div>
+                          ) : (
+                            categories.map((category) => (
+                              <button
+                                key={category.id}
+                                onClick={() => {
+                                  setSelectedCategory(category.name);
+                                  setIsDropdownOpen(false);
+                                }}
+                                className="w-full text-left"
                               >
-                                <span>{category.name}</span>
-                                {selectedCategory === category.name && (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 text-custom_green-500"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                )}
-                              </div>
-                            </button>
-                          ))}
+                                <div
+                                  className={`flex items-center justify-between px-4 py-2 hover:bg-custom_green-100 transition-colors ${
+                                    selectedCategory === category.name
+                                      ? "bg-custom_green-100 text-custom_green-500"
+                                      : ""
+                                  } ${
+                                    category.id === categories[0].id
+                                      ? "rounded-t-lg"
+                                      : ""
+                                  } ${
+                                    category.id ===
+                                    categories[categories.length - 1].id
+                                      ? "rounded-b-lg"
+                                      : ""
+                                  }`}
+                                >
+                                  <span>{category.name}</span>
+                                  {selectedCategory === category.name && (
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-5 w-5 text-custom_green-500"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  )}
+                                </div>
+                              </button>
+                            ))
+                          )}
                         </div>
                       </div>
                     </>
@@ -200,7 +230,7 @@ export default function Home() {
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
         onSubmit={(data) => {
-          console.log('Form submitted:', data);
+          console.log("Form submitted:", data);
           setIsCreateModalOpen(false);
         }}
       />
