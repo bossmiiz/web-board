@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { LogoutResponseDto } from './dto/logout-response.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -26,5 +27,11 @@ export class AuthService {
       },
       token,
     };
+  }
+
+  logout(): Promise<LogoutResponseDto> {
+    return Promise.resolve({
+      message: 'Logout successful',
+    });
   }
 }
