@@ -26,4 +26,10 @@ export class LoginResponseDto {
     type: UserDto,
   })
   user: UserDto;
+
+  @ApiProperty({
+    description: 'JWT access token for authentication',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+  })
+  token: string;
 }
