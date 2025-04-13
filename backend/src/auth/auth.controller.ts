@@ -12,12 +12,12 @@ export class AuthController {
   @Post('login')
   @ApiOperation({
     summary: 'User login',
-    description: 'Authenticate a user with username',
+    description: 'Authenticate a user with username and return a JWT token',
   })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: 200,
-    description: 'Login successful',
+    description: 'Login successful, returns user info and JWT token',
     type: LoginResponseDto,
   })
   @ApiResponse({
