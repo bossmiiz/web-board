@@ -6,4 +6,4 @@ export class LogoutResponseDto {
     example: 'Logout successful',
   })
   message: string;
-} 
+}
