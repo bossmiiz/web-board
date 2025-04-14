@@ -9,29 +9,7 @@ import Sidebar from "@/components/Sidebar";
 import BlogCard from "@/components/BlogCard";
 import CreatePostModal from "@/components/CreatePostModal";
 import { getCategories, Category } from "@/services/categories.service";
-
-const dummyPosts = [
-  {
-    id: "1",
-    title: "The Beginning of the End of the World",
-    excerpt:
-      "The afterlife sitcom The Good Place comes to its culmination, the show's two protagonists, Eleanor and Chidi, contemplate their future...",
-    author: "Wittawat",
-    category: "History",
-    commentCount: 32,
-    authorImage: "/default-avatar.png",
-  },
-  {
-    id: "2",
-    title: "The Mental Health Benefits of Exercise",
-    excerpt:
-      "You already know that exercise is good for your body. But did you know it can also boost your mood, improve your sleep, and help you deal with depression, anxiety, stress, and more?",
-    author: "Nicholas",
-    category: "Exercise",
-    commentCount: 32,
-    authorImage: "/default-avatar.png",
-  },
-];
+import { getPosts, Post } from "@/services/posts.service";
 
 export default function Home() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -42,6 +20,9 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [postsError, setPostsError] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,7 +40,22 @@ export default function Home() {
       }
     };
 
+    const fetchPosts = async () => {
+      try {
+        setIsLoadingPosts(true);
+        const data = await getPosts();
+        setPosts(data);
+        setPostsError(null);
+      } catch (error) {
+        setPostsError("Failed to load posts");
+        console.error("Error loading posts:", error);
+      } finally {
+        setIsLoadingPosts(false);
+      }
+    };
+
     fetchCategories();
+    fetchPosts();
   }, []);
 
   useEffect(() => {
@@ -212,14 +208,30 @@ export default function Home() {
             </div>
 
             <div>
-              {dummyPosts.map((post, index) => (
-                <BlogCard
-                  key={index}
-                  {...post}
-                  isFirst={index === 0}
-                  isLast={index === dummyPosts.length - 1}
-                />
-              ))}
+              {isLoadingPosts ? (
+                <div className="text-center py-4">Loading posts...</div>
+              ) : postsError ? (
+                <div className="text-center py-4 text-red-500">
+                  {postsError}
+                </div>
+              ) : posts.length === 0 ? (
+                <div className="text-center py-4">No posts available</div>
+              ) : (
+                posts.map((post, index) => (
+                  <BlogCard
+                    key={post.id}
+                    id={post.id.toString()}
+                    title={post.title}
+                    excerpt={post.content.substring(0, 150) + "..."}
+                    author={post.user.username}
+                    category={post.category.name}
+                    commentCount={0}
+                    authorImage={post.user.username.charAt(0)}
+                    isFirst={index === 0}
+                    isLast={index === posts.length - 1}
+                  />
+                ))
+              )}
             </div>
           </div>
         </main>
