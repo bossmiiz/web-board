@@ -1,6 +1,7 @@
 import { XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import { getCategories, Category } from "../services/categories.service";
+import { createPost } from "../services/posts.service";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export default function CreatePostModal({
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -56,15 +58,45 @@ export default function CreatePostModal({
     }
   };
 
-  const handleSubmit = () => {
-    onSubmit({
-      title,
-      content,
-      category: selectedCategory,
-    });
-    setTitle("");
-    setContent("");
-    onClose();
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      setError(null);
+
+      // Find the category ID based on the selected category name
+      const selectedCategoryObj = categories.find(
+        (cat) => cat.name === selectedCategory
+      );
+
+      if (!selectedCategoryObj) {
+        setError("Please select a valid category");
+        return;
+      }
+
+      // Call the backend API to create the post
+      await createPost({
+        title,
+        content,
+        categoryId: selectedCategoryObj.id,
+      });
+
+      // Call the parent component's onSubmit handler
+      onSubmit({
+        title,
+        content,
+        category: selectedCategory,
+      });
+
+      // Reset form and close modal
+      setTitle("");
+      setContent("");
+      onClose();
+    } catch (err) {
+      console.error("Error creating post:", err);
+      setError("Failed to create post. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -94,6 +126,12 @@ export default function CreatePostModal({
         </div>
 
         <div className="p-4 md:p-6">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
           <div className="mb-4 md:mb-6 relative">
             <button
               onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
@@ -186,9 +224,18 @@ export default function CreatePostModal({
             <button
               onClick={handleSubmit}
               className="w-full md:w-[105px] h-[40px] px-4 py-2 text-sm bg-custom_success text-white rounded-lg hover:bg-[#2b5f44] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!title.trim() || !content.trim() || !selectedCategory}
+              disabled={
+                !title.trim() ||
+                !content.trim() ||
+                !selectedCategory ||
+                isSubmitting
+              }
             >
-              {mode === "create" ? "Post" : "Confirm"}
+              {isSubmitting
+                ? "Submitting..."
+                : mode === "create"
+                ? "Post"
+                : "Confirm"}
             </button>
           </div>
         </div>
