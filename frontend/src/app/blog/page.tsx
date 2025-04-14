@@ -9,39 +9,8 @@ import BlogCard from "@/components/BlogCard";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import CreatePostModal from "@/components/CreatePostModal";
-
-const categories = [
-  { id: 1, name: "History" },
-  { id: 2, name: "Food" },
-  { id: 3, name: "Pets" },
-  { id: 4, name: "Health" },
-  { id: 5, name: "Fashion" },
-  { id: 6, name: "Exercise" },
-  { id: 7, name: "Others" },
-] as const;
-
-const dummyPosts = [
-  {
-    id: "1",
-    title: "The Beginning of the End of the World",
-    excerpt:
-      "The afterlife sitcom The Good Place comes to its culmination, the show's two protagonists, Eleanor and Chidi, contemplate their future. Having lived thousands upon thousands of lifetimes together, and having experienced virtually everything this life has to offer...",
-    author: "Jessica",
-    category: "History",
-    commentCount: 32,
-    authorImage: "/images/avatar.jpg",
-  },
-  {
-    id: "2",
-    title: "The Power of Pets",
-    excerpt:
-      "Nothing compares to the joy of coming home to a loyal companion. The unconditional love of a pet can do more than keep you company. Pets may also decrease stress, improve heart health, and even help children with their emotional and social skills.",
-    author: "Jessica",
-    category: "Pets",
-    commentCount: 1,
-    authorImage: "/images/avatar.jpg",
-  },
-] as const;
+import { getCategories, Category } from "@/services/categories.service";
+import { getPosts, Post } from "@/services/posts.service";
 
 const SearchBar = memo(
   ({
@@ -81,11 +50,13 @@ const CategoryDropdown = memo(
     selectedCategory,
     onToggle,
     onSelect,
+    categories,
   }: {
     isOpen: boolean;
     selectedCategory: string;
     onToggle: () => void;
     onSelect: (category: string) => void;
+    categories: Category[];
   }) => (
     <div className="relative">
       <button
@@ -118,8 +89,12 @@ const CategoryDropdown = memo(
                       selectedCategory === category.name
                         ? "bg-custom_green-100 text-custom_green-500"
                         : ""
-                    } ${category.id === 1 ? "rounded-t-lg" : ""} ${
-                      category.id === categories.length ? "rounded-b-lg" : ""
+                    } ${
+                      category.id === categories[0].id ? "rounded-t-lg" : ""
+                    } ${
+                      category.id === categories[categories.length - 1].id
+                        ? "rounded-b-lg"
+                        : ""
                     }`}
                   >
                     <span>{category.name}</span>
@@ -156,29 +131,45 @@ export default function BlogPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingPost, setEditingPost] = useState<{
-    id: string;
-    title: string;
-    content: string;
-    category: string;
-  } | null>(null);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const handleEdit = useCallback((id: string) => {
-    const postToEdit = dummyPosts.find((post) => post.id === id);
-    if (postToEdit) {
-      setEditingPost({
-        id,
-        title: postToEdit.title,
-        content: postToEdit.excerpt,
-        category: postToEdit.category,
-      });
-      setSelectedCategory(postToEdit.category);
-      setIsCreateModalOpen(true);
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [categoriesData, postsData] = await Promise.all([
+          getCategories(),
+          getPosts(),
+        ]);
+        setCategories(categoriesData);
+        setPosts(postsData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleDelete = useCallback((id: string) => {
+  const handleEdit = useCallback(
+    (id: number) => {
+      const postToEdit = posts.find((post) => post.id === id);
+      if (postToEdit) {
+        setEditingPost(postToEdit);
+        setSelectedCategory(postToEdit.category.name);
+        setIsCreateModalOpen(true);
+      }
+    },
+    [posts]
+  );
+
+  const handleDelete = useCallback((id: number) => {
     console.log("Delete post:", id);
   }, []);
 
@@ -221,6 +212,14 @@ export default function BlogPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-custom_green-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
@@ -250,6 +249,7 @@ export default function BlogPage() {
                   selectedCategory={selectedCategory}
                   onToggle={toggleDropdown}
                   onSelect={handleCategorySelect}
+                  categories={categories}
                 />
                 <button
                   onClick={() => setIsCreateModalOpen(true)}
@@ -261,15 +261,21 @@ export default function BlogPage() {
             </div>
 
             <div>
-              {dummyPosts.map((post, index) => (
+              {posts.map((post, index) => (
                 <BlogCard
                   key={post.id}
-                  {...post}
+                  id={post.id.toString()}
+                  title={post.title}
+                  excerpt={post.content}
+                  author={post.user.username}
+                  category={post.category.name}
+                  commentCount={0}
+                  authorImage={post.user.username.charAt(0)}
                   isFirst={index === 0}
-                  isLast={index === dummyPosts.length - 1}
+                  isLast={index === posts.length - 1}
                   showActions={true}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
+                  onEdit={(id) => handleEdit(parseInt(id))}
+                  onDelete={(id) => handleDelete(parseInt(id))}
                 />
               ))}
             </div>
