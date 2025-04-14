@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  Get,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -40,5 +47,16 @@ export class PostsController {
     @Request() req: RequestWithUser,
   ) {
     return await this.postsService.create(createPostDto, req.user.sub);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all posts' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all posts',
+    type: [CreatePostDto],
+  })
+  async getPosts() {
+    return await this.postsService.getPosts();
   }
 }

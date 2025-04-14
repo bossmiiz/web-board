@@ -19,4 +19,13 @@ export class PostsService {
 
     return await this.postsRepository.save(post);
   }
+
+  async getPosts(): Promise<Post[]> {
+    return await this.postsRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['user', 'category'],
+    });
+  }
 }
