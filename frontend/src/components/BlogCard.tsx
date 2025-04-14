@@ -29,12 +29,18 @@ const AuthorInfo = memo(
   ({ author, authorImage }: { author: string; authorImage: string }) => (
     <div className="flex items-center space-x-3">
       <div className="relative w-8 h-8">
-        <Image
-          src={authorImage}
-          alt={author}
-          fill
-          className="rounded-full object-cover"
-        />
+        {authorImage.startsWith("/") ? (
+          <Image
+            src={authorImage}
+            alt={author}
+            fill
+            className="rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-custom_success flex items-center justify-center text-white font-semibold">
+            {authorImage}
+          </div>
+        )}
       </div>
       <span className="text-gray-700">{author}</span>
     </div>
