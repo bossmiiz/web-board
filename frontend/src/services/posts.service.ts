@@ -7,7 +7,7 @@ export interface CreatePostData {
 }
 
 export interface Post {
-  id: number;
+  id: string;
   title: string;
   content: string;
   categoryId: number;
@@ -66,6 +66,52 @@ export const getPosts = async (): Promise<Post[]> => {
     return response.data;
   } catch (error) {
     console.error("Error fetching posts:", error);
+    throw error;
+  }
+};
+
+export const deletePost = async (postId: string): Promise<void> => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
+  }
+};
+
+export const updatePost = async (
+  postId: string,
+  postData: CreatePostData
+): Promise<Post> => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const response = await axios.patch(
+      `${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`,
+      postData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating post:", error);
     throw error;
   }
 };

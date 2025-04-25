@@ -9,6 +9,7 @@ import { memo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import { deletePost } from "@/services/posts.service";
 
 interface BlogCardProps {
   id: string;
@@ -62,6 +63,7 @@ const ActionButtons = memo(
     const { isAuthenticated } = useAuth();
     const router = useRouter();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleEdit = () => {
       if (!isAuthenticated) {
@@ -79,9 +81,18 @@ const ActionButtons = memo(
       setShowDeleteModal(true);
     };
 
-    const handleConfirmDelete = () => {
-      onDelete?.(id);
-      setShowDeleteModal(false);
+    const handleConfirmDelete = async () => {
+      try {
+        setIsDeleting(true);
+        await deletePost(id);
+        onDelete?.(id);
+        setShowDeleteModal(false);
+      } catch (error) {
+        console.error("Error deleting post:", error);
+        // You might want to show an error message to the user here
+      } finally {
+        setIsDeleting(false);
+      }
     };
 
     return (
@@ -98,6 +109,7 @@ const ActionButtons = memo(
             onClick={handleDelete}
             className="p-2 text-gray-500 hover:text-red-500 transition-colors"
             aria-label="Delete post"
+            disabled={isDeleting}
           >
             <TrashIcon className="h-5 w-5" />
           </button>
@@ -106,6 +118,7 @@ const ActionButtons = memo(
           isOpen={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
           onConfirm={handleConfirmDelete}
+          isDeleting={isDeleting}
         />
       </>
     );

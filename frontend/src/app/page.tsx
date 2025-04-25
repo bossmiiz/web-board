@@ -241,9 +241,15 @@ export default function Home() {
         onClose={() => setIsCreateModalOpen(false)}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
-        onSubmit={(data) => {
-          console.log("Form submitted:", data);
-          setIsCreateModalOpen(false);
+        onSubmit={async () => {
+          try {
+            // Fetch posts again to update the list
+            const updatedPosts = await getPosts();
+            setPosts(updatedPosts);
+            setIsCreateModalOpen(false);
+          } catch (error) {
+            console.error("Error updating posts:", error);
+          }
         }}
       />
     </div>

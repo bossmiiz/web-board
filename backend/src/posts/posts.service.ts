@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -27,5 +28,20 @@ export class PostsService {
       },
       relations: ['user', 'category'],
     });
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.postsRepository.delete(id);
+  }
+
+  async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
+    const post = await this.postsRepository.findOne({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
+    }
+
+    const updatedPost = this.postsRepository.merge(post, updatePostDto);
+    return await this.postsRepository.save(updatedPost);
   }
 }

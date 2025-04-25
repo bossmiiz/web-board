@@ -10,7 +10,13 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import CreatePostModal from "@/components/CreatePostModal";
 import { getCategories, Category } from "@/services/categories.service";
-import { getPosts, Post } from "@/services/posts.service";
+import {
+  getPosts,
+  Post,
+  updatePost,
+  createPost,
+} from "@/services/posts.service";
+import { deletePost } from "@/services/posts.service";
 
 const SearchBar = memo(
   ({
@@ -158,7 +164,7 @@ export default function BlogPage() {
   }, []);
 
   const handleEdit = useCallback(
-    (id: number) => {
+    (id: string) => {
       const postToEdit = posts.find((post) => post.id === id);
       if (postToEdit) {
         setEditingPost(postToEdit);
@@ -169,20 +175,57 @@ export default function BlogPage() {
     [posts]
   );
 
-  const handleDelete = useCallback((id: number) => {
-    console.log("Delete post:", id);
+  const handleDelete = useCallback(async (id: string) => {
+    try {
+      await deletePost(id);
+      // Refresh posts after successful deletion
+      const updatedPosts = await getPosts();
+      setPosts(updatedPosts);
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
   }, []);
 
   const handlePostSubmit = useCallback(
-    (data: { title: string; content: string; category: string }) => {
-      if (editingPost) {
-        console.log("Editing post:", editingPost.id, data);
-      } else {
-        console.log("Creating new post:", data);
+    async (data: { title: string; content: string; category: string }) => {
+      try {
+        if (editingPost) {
+          const categoryId = categories.find(
+            (c) => c.name === data.category
+          )?.id;
+          if (!categoryId) {
+            throw new Error("Category not found");
+          }
+          await updatePost(editingPost.id.toString(), {
+            title: data.title,
+            content: data.content,
+            categoryId,
+          });
+        } else {
+          const categoryId = categories.find(
+            (c) => c.name === data.category
+          )?.id;
+          if (!categoryId) {
+            throw new Error("Category not found");
+          }
+          await createPost({
+            title: data.title,
+            content: data.content,
+            categoryId,
+          });
+        }
+
+        // Refresh posts after successful create/update
+        const updatedPosts = await getPosts();
+        setPosts(updatedPosts);
+
+        setEditingPost(null);
+        setIsCreateModalOpen(false);
+      } catch (error) {
+        console.error("Error handling post:", error);
       }
-      setEditingPost(null);
     },
-    [editingPost]
+    [editingPost, categories]
   );
 
   const handleModalClose = useCallback(() => {
@@ -274,8 +317,8 @@ export default function BlogPage() {
                   isFirst={index === 0}
                   isLast={index === posts.length - 1}
                   showActions={true}
-                  onEdit={(id) => handleEdit(parseInt(id))}
-                  onDelete={(id) => handleDelete(parseInt(id))}
+                  onEdit={(id) => handleEdit(id)}
+                  onDelete={(id) => handleDelete(id)}
                 />
               ))}
             </div>
@@ -288,6 +331,7 @@ export default function BlogPage() {
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
         mode={editingPost ? "edit" : "create"}
+        postId={editingPost?.id.toString()}
         initialTitle={editingPost?.title || ""}
         initialContent={editingPost?.content || ""}
         onSubmit={handlePostSubmit}

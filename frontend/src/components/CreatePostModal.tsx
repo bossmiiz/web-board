@@ -1,7 +1,9 @@
 import { XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import { getCategories, Category } from "../services/categories.service";
-import { createPost } from "../services/posts.service";
+import { createPost, updatePost } from "../services/posts.service";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -9,6 +11,7 @@ interface CreatePostModalProps {
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   mode?: "create" | "edit";
+  postId?: string;
   initialTitle?: string;
   initialContent?: string;
   onSubmit: (data: {
@@ -24,6 +27,7 @@ export default function CreatePostModal({
   selectedCategory,
   onCategoryChange,
   mode = "create",
+  postId,
   initialTitle = "",
   initialContent = "",
   onSubmit,
@@ -35,6 +39,8 @@ export default function CreatePostModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (isOpen) {
@@ -59,6 +65,12 @@ export default function CreatePostModal({
   };
 
   const handleSubmit = async () => {
+    if (!isAuthenticated) {
+      onClose();
+      router.push("/login");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       setError(null);
@@ -73,12 +85,19 @@ export default function CreatePostModal({
         return;
       }
 
-      // Call the backend API to create the post
-      await createPost({
+      const postData = {
         title,
         content,
         categoryId: selectedCategoryObj.id,
-      });
+      };
+
+      if (mode === "edit" && postId) {
+        // Update existing post
+        await updatePost(postId, postData);
+      } else {
+        // Create new post
+        await createPost(postData);
+      }
 
       // Call the parent component's onSubmit handler
       onSubmit({
@@ -92,8 +111,12 @@ export default function CreatePostModal({
       setContent("");
       onClose();
     } catch (err) {
-      console.error("Error creating post:", err);
-      setError("Failed to create post. Please try again.");
+      console.error("Error handling post:", err);
+      setError(
+        `Failed to ${
+          mode === "edit" ? "update" : "create"
+        } post. Please try again.`
+      );
     } finally {
       setIsSubmitting(false);
     }
